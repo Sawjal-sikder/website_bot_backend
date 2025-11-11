@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.db.models import Sum
 from .serializers import *
 from .models import *
+import random
 
 # Product Views
 class ProductListCreateView(generics.ListCreateAPIView):
@@ -84,6 +85,7 @@ class SellerDetailView(generics.RetrieveUpdateDestroyAPIView):
         response = super().delete(request, *args, **kwargs)
         return Response({'message': 'Seller deleted successfully'}, status=response.status_code)
     
+
 def BestSeleView(request):
     best_seles = (
         OrderDetail.objects
@@ -91,8 +93,30 @@ def BestSeleView(request):
         .annotate(total_quantity=Sum('quantity'))
         .order_by('-total_quantity')[:5]
     )
-    data = list(best_seles)
-    return JsonResponse({'message': 'Best sellers view', 'data': data}, status=200)
+
+    best_seles_list = list(best_seles)
+    existing_ids = [item['product__id'] for item in best_seles_list]
+
+    # If fewer than 5, fill with products from Product table
+    if len(best_seles_list) < 5:
+        needed = 5 - len(best_seles_list)
+        extra_products = (
+            Product.objects
+            .exclude(id__in=existing_ids)
+            .values('id', 'name', 'image')
+        )
+
+        extra_products = random.sample(list(extra_products), min(needed, extra_products.count()))
+
+        extra_products_data = [
+            {'product__id': p['id'], 'product__name': p['name'], 'product__image': p['image']}
+            for p in extra_products
+        ]
+
+        best_seles_list.extend(extra_products_data)
+
+    return JsonResponse({'message': 'Best sellers view', 'data': best_seles_list}, status=200)
+
 
 def BestSellerView(request):
     best_sellers = (
@@ -102,4 +126,19 @@ def BestSellerView(request):
         .order_by('-total_quantity')[:5]
     )
     data = list(best_sellers)
+    existing_ids = [item['product__seller__id'] for item in data]
+    # If fewer than 5, fill with sellers from Seller table
+    if len(data) < 5:
+        needed = 5 - len(data)
+        extra_sellers = (
+            Seller.objects
+            .exclude(id__in=existing_ids)
+            .values('id', 'title', 'image')
+        )
+        extra_sellers = random.sample(list(extra_sellers), min(needed, extra_sellers.count()))
+        extra_sellers_data = [
+            {'product__seller__id': s['id'], 'product__seller__title': s['title'], 'product__seller__image': s['image']}
+            for s in extra_sellers
+        ]
+        data.extend(extra_sellers_data)
     return JsonResponse({'message': 'Best sellers view', 'data': data}, status=200)
