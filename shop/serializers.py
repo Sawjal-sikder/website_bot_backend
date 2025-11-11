@@ -36,3 +36,9 @@ class OrderSerializer(serializers.ModelSerializer):
         order.total = total
         order.save()
         return order
+    
+    
+class SellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seller
+        fields = '__all__'

@@ -3,6 +3,8 @@ from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from django.http import JsonResponse
+from django.db.models import Sum
 from .serializers import *
 from .models import *
 
@@ -55,3 +57,49 @@ class OrderCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save()
+        
+        
+class SellerView(generics.ListCreateAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    permission_classes = [permissions.AllowAny]
+    pagination_class = None
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
+    
+class SellerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
+    
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        return Response({'message': 'Seller deleted successfully'}, status=response.status_code)
+    
+def BestSeleView(request):
+    best_seles = (
+        OrderDetail.objects
+        .values('product__id', 'product__name', 'product__image')
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('-total_quantity')[:5]
+    )
+    data = list(best_seles)
+    return JsonResponse({'message': 'Best sellers view', 'data': data}, status=200)
+
+def BestSellerView(request):
+    best_sellers = (
+        OrderDetail.objects
+        .values('product__seller__id', 'product__seller__title', 'product__seller__image')
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('-total_quantity')[:5]
+    )
+    data = list(best_sellers)
+    return JsonResponse({'message': 'Best sellers view', 'data': data}, status=200)

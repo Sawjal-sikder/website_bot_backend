@@ -22,8 +22,8 @@ def orderPayment(request, orderId):
         # Already paid
         if order.payment_status == 'Paid':
             return JsonResponse({"success": False, "error": "Order already paid"}, status=400)
-        
-        # If payment is pending or not created, create checkout session
+
+        # If payment is not paid 
         if order.payment_status != 'Paid':
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
@@ -73,9 +73,9 @@ def paymentWebhook(request):
             payload, sig_header, endpoint_secret
         )
     except ValueError:
-        return HttpResponse(status=400)  # Invalid payload
+        return HttpResponse(status=400)  
     except stripe.error.SignatureVerificationError: 
-        return HttpResponse(status=400)  # Invalid signature
+        return HttpResponse(status=400)  
 
     try:
         # Handle successful checkout session completion

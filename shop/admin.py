@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Product, Order, OrderDetail
+from .models import Product, Order, OrderDetail, Seller
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'stock', 'is_active', 'created_at']
+    list_display = ['name', 'price','seller', 'stock', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['name', 'description']
     list_editable = ['price', 'stock', 'is_active']
@@ -44,7 +44,7 @@ class OrderDetailInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'customer_name', 'email', 'total', 'status', 'payment_method', 'payment_status', 'created_at']
+    list_display = ['id', 'customer_name', 'email', 'total', 'status', 'payment_method', 'payment_status', 'created_at', 'updated_at']
     list_filter = ['status', 'payment_method', 'payment_status', 'created_at']
     search_fields = ['customer_name', 'email', 'phone_number', 'address']
     list_editable = ['status', 'payment_status']
@@ -117,6 +117,23 @@ class OrderDetailAdmin(admin.ModelAdmin):
         }),
         ('Calculated Fields', {
             'fields': ('get_total_price',),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(Seller)
+class SellerAdmin(admin.ModelAdmin):
+    list_display = ['title', 'created_at', 'updated_at']
+    search_fields = ['title', 'description']
+    readonly_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']
+    
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'description', 'image')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
