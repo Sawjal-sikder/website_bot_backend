@@ -1,7 +1,7 @@
 from django.shortcuts import render
 # generic views
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.db.models import Sum
@@ -15,6 +15,8 @@ class ProductListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     pagination_class = None
     parser_classes = (MultiPartParser, FormParser)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
     
     def get_permissions(self):
         if self.request.method == 'POST':
