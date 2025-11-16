@@ -44,6 +44,44 @@ class OrderSerializer(serializers.ModelSerializer):
         order.save()
         return order
     
+
+    # def update(self, instance, validated_data):
+    #     # extract order_details if provided
+    #     order_details_data = validated_data.pop('order_details', None)
+
+    #     # update simple fields
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+    #     instance.save()
+
+    #     # If no order_details provided → return simple update
+    #     if order_details_data is None:
+    #         return instance
+
+    #     # Delete all previous order details
+    #     instance.order_details.all().delete()
+
+    #     # Add new order details
+    #     total = 0
+    #     for detail_data in order_details_data:
+    #         product = detail_data['product']
+    #         quantity = detail_data['quantity']
+    #         price = product.price * quantity
+    #         total += price
+
+    #         OrderDetail.objects.create(
+    #             order=instance,
+    #             product=product,
+    #             quantity=quantity,
+    #             price=price
+    #         )
+
+    #     # Update total
+    #     instance.total = total
+    #     instance.save()
+
+    #     return instance
+    
     
 class SellerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -119,13 +157,13 @@ class AdminOrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'customer_name', 'email', 'phone_number', 'address', 'delivery_date', 'total', 'status', 'payment_method', 'payment_status', 'notes', 'created_at', 'updated_at']
         
         
-    def update(self, instance, validated_data):
-        allowed = ['status']  # only allow status update
-        forbidden_fields = [field for field in validated_data.keys() if field not in allowed]
+    # def update(self, instance, validated_data):
+    #     allowed = ['status']  # only allow status update
+    #     forbidden_fields = [field for field in validated_data.keys() if field not in allowed]
         
-        if forbidden_fields:
-            raise ValidationError({
-                "message": f"Updating the following fields is not allowed: {', '.join(forbidden_fields)}"
-            })
+    #     if forbidden_fields:
+    #         raise ValidationError({
+    #             "message": f"Updating the following fields is not allowed: {', '.join(forbidden_fields)}"
+    #         })
 
-        return super().update(instance, validated_data)
+    #     return super().update(instance, validated_data)

@@ -197,8 +197,7 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAdminUser]
 
     def patch(self, request, *args, **kwargs):
-        data = {'status': request.data.get('status')}
-        serializer = self.get_serializer(self.get_object(), data=data, partial=True)
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'message': 'Order status updated successfully', 'data': serializer.data})
