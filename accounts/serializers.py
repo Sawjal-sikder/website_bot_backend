@@ -394,3 +394,28 @@ class ProjectCretientialsSerializer(serializers.ModelSerializer):
         if self.instance is None and ProjectCretientials.objects.exists():
             raise ValidationError("Only one Project Credential can be created. Delete the existing one to add another.")
         return attrs
+
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=CustomUser.objects.all(), message="email already exists")]
+    )
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+
+    class Meta:
+        model = CustomUser
+        fields = ['profile_picture','full_name', 'email', 'phone_number', 'is_staff', 'is_active', 'is_superuser', 'password']
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            profile_picture=validated_data.get('profile_picture', None),
+            email=validated_data['email'],
+            full_name=validated_data.get('full_name', ''),
+            phone_number=validated_data.get('phone_number', ''),
+            password=validated_data['password'],
+            is_staff=validated_data.get('is_staff', False),
+            is_active=validated_data.get('is_active', False),
+            is_superuser=validated_data.get('is_superuser', False),
+        )
+        return user

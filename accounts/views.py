@@ -253,3 +253,33 @@ class ProjectCretientialsView(generics.ListCreateAPIView):
 class ProjectCretientialsDetailView(generics.RetrieveUpdateAPIView):
     queryset = ProjectCretientials.objects.all()
     serializer_class = ProjectCretientialsSerializer
+
+
+class UserDeleteAdminView(generics.DestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    
+    def get_permissions(self):
+        # only superuser can delete other users
+        if self.request.method == 'DELETE':
+            self.permission_classes = [IsSuperUser]
+        return super().get_permissions()
+    
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"detail": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    
+class CreateUserView(generics.CreateAPIView):
+    serializer_class = CreateUserSerializer
+    permission_classes = [IsSuperUser]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        user_data = self.get_serializer(user).data
+        return Response({
+            "message": "User account created successfully by admin.",
+            "user": user_data
+        }, status=status.HTTP_201_CREATED)
