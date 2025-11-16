@@ -201,3 +201,14 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'message': 'Order status updated successfully', 'data': serializer.data})
+
+class AdminOrderDetailsUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializer
+    permission_classes = [permissions.IsAdminUser]
+    
+    def patch(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'Order detail updated successfully', 'data': serializer.data})

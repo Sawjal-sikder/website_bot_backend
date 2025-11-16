@@ -68,3 +68,12 @@ class OrderDetail(models.Model):
 
     def __str__(self):
         return f'{self.quantity} of {self.product.name} in Order {self.order.id}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.update_order_total()
+
+    def update_order_total(self):
+        total = sum(item.quantity * item.price for item in self.order.order_details.all())
+        self.order.total = total
+        self.order.save(update_fields=['total'])
