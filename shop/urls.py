@@ -23,5 +23,10 @@ urlpatterns = [
     path('low-stock-products/', LowStockProductView.as_view(), name='low-stock-products'),
     path('total-earnings/', TotalEarningsView.as_view(), name='total-earnings'),
     
+    # Admin Order Management
+    path('admin/orders/', AdminOrderListView.as_view(), name='admin-order-list'),
+    path('admin/orderdetails/<int:pk>/', AdminOrderDetailsView.as_view(), name='admin-order-detail'),
+    path('admin/orders/status/<int:pk>/', AdminOrderStatusUpdateView.as_view(), name='admin-order-status-update'),
+    
 
 ]

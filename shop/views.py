@@ -174,3 +174,31 @@ class TotalEarningsView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(instance={})
         return Response(serializer.data)
+    
+    
+class AdminOrderListView(generics.ListAPIView):
+    queryset = Order.objects.all().order_by('-created_at')
+    serializer_class = AdminOrderSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        return Response({'message': 'Order List successfully', 'data': response.data})
+    
+class AdminOrderDetailsView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAdminUser]
+    
+    
+class AdminOrderStatusUpdateView(generics.UpdateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = AdminOrderSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def patch(self, request, *args, **kwargs):
+        data = {'status': request.data.get('status')}
+        serializer = self.get_serializer(self.get_object(), data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'Order status updated successfully', 'data': serializer.data})

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from django.db.models.functions import TruncMonth
 from django.contrib.auth import get_user_model
+from django.forms import ValidationError
 from rest_framework import serializers
 from django.db.models import Count, Sum
 User = get_user_model()
@@ -110,3 +111,21 @@ class TotalEarningsSerializer(serializers.Serializer):
         
         rep['total_earnings'] = total_earnings
         return rep
+
+
+class AdminOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['id', 'customer_name', 'email', 'phone_number', 'address', 'delivery_date', 'total', 'status', 'payment_method', 'payment_status', 'notes', 'created_at', 'updated_at']
+        
+        
+    def update(self, instance, validated_data):
+        allowed = ['status']  # only allow status update
+        forbidden_fields = [field for field in validated_data.keys() if field not in allowed]
+        
+        if forbidden_fields:
+            raise ValidationError({
+                "message": f"Updating the following fields is not allowed: {', '.join(forbidden_fields)}"
+            })
+
+        return super().update(instance, validated_data)
