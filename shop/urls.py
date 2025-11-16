@@ -29,5 +29,8 @@ urlpatterns = [
     path('admin/orders/update/<int:pk>/', AdminOrderStatusUpdateView.as_view(), name='admin-order-update'),
     path('admin/orderdetails/update/<int:pk>/', AdminOrderDetailsUpdateView.as_view(), name='admin-orderdetail-update'),
     
+    # Admin Product Management
+    path('admin/products/list/', ProductListAdminView.as_view(), name='admin-product-list'),
+    
 
 ]

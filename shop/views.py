@@ -25,6 +25,21 @@ class ProductListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(is_active=True)
+        
+        
+class ProductListAdminView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
+    
+    def perform_create(self, serializer):
+        serializer.save(is_active=True)
     
 
 class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
