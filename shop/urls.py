@@ -16,7 +16,12 @@ urlpatterns = [
     path('webhook/', paymentWebhook, name='payment-webhook'),
     # best sellers
     path('best-seles/', BestSeleView, name='best-sellers-list'),
-    path('best-sellers/', BestSellerView, name='best-sellers-sellers-list')
+    path('best-sellers/', BestSellerView, name='best-sellers-sellers-list'),
+    
+    # Admin Dashboard
+    path('dashboard/', DashboardView.as_view(), name='admin-dashboard'),
+    path('low-stock-products/', LowStockProductView.as_view(), name='low-stock-products'),
+    path('total-earnings/', TotalEarningsView.as_view(), name='total-earnings'),
     
 
 ]

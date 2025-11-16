@@ -144,3 +144,30 @@ def BestSellerView(request):
         ]
         data.extend(extra_sellers_data)
     return JsonResponse({'message': 'Best sellers view', 'data': data}, status=200)
+
+
+class DashboardView(generics.GenericAPIView):
+    serializer_class = DashboardSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(instance={})
+        return Response(serializer.data)
+
+
+class LowStockProductView(generics.GenericAPIView):
+    serializer_class = LowStockProductSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, *args, **kwargs):
+        low_stock_products = Product.objects.filter(stock__lte=1).order_by('name')
+        serializer = self.get_serializer(low_stock_products, many=True)
+        return Response({'message': 'Low stock products List successfully', 'data': serializer.data})
+    
+class TotalEarningsView(generics.GenericAPIView):
+    serializer_class = TotalEarningsSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(instance={})
+        return Response(serializer.data)

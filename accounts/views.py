@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .userpermissions import IsSuperUser
 
 from .serializers import *
 
@@ -165,6 +165,12 @@ class UpdateProfileView(generics.UpdateAPIView):
 class UserUpdateView(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserUpdateSerializer
+    
+    def get_permissions(self):
+        # put and patch methods are not allowed for the superuser
+        if self.request.method in ['PUT', 'PATCH']:
+            self.permission_classes = [IsSuperUser]
+        return super().get_permissions()
 
 
 class UserListView(generics.ListAPIView):

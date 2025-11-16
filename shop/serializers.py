@@ -1,6 +1,12 @@
+from datetime import datetime
+from django.db.models.functions import TruncMonth
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.db.models import Count, Sum
+User = get_user_model()
 from .models import *
 
+# product serializer
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -42,3 +48,50 @@ class SellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seller
         fields = '__all__'
+        
+        
+class DashboardSerializer(serializers.Serializer):
+    current_user = serializers.CharField(read_only=True)
+    total_products = serializers.IntegerField(read_only=True)
+    total_users = serializers.IntegerField(read_only=True)
+    total_orders = serializers.IntegerField(read_only=True)
+    total_completed_orders = serializers.IntegerField(read_only=True)
+    total_Cancelled_orders = serializers.IntegerField(read_only=True)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['current_user'] = self.context['request'].user.full_name or "Admin User"
+        rep['total_products'] = Product.objects.count()
+        rep['total_users'] = User.objects.count()
+        rep['total_completed_orders'] = Order.objects.filter(status='Completed').count()
+        rep['total_Cancelled_orders'] = Order.objects.filter(status='Cancelled').count()
+        
+        monthly_data = Order.objects.annotate(month =TruncMonth('created_at')).values('month').annotate(count=Count('id')).order_by('month')
+        monthly_orders = {}
+        for data in monthly_data:
+            month_name = data['month'].strftime('%B %Y')
+            monthly_orders[month_name] = data['count']
+        
+        rep['total_orders'] = monthly_orders
+        return rep
+
+class LowStockProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'stock']
+        
+        
+class TotalEarningsSerializer(serializers.Serializer):
+    total_earnings = serializers.DecimalField(max_digits=15, decimal_places=2, read_only=True)
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        
+        monthly_data = Order.objects.filter(payment_status='Paid').annotate(month=TruncMonth('created_at')).values('month').annotate(total=Sum('total')).order_by('month')
+        total_earnings = {}
+        for data in monthly_data:
+            month_name = data['month'].strftime('%B %Y')
+            total_earnings[month_name] = data['total']
+        
+        rep['total_earnings'] = total_earnings
+        return rep

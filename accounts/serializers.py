@@ -340,11 +340,12 @@ class UserSerializer(serializers.ModelSerializer):
                   'full_name',
                   'phone_number',
                   'profile_picture',
-                  'is_active'
+                  'is_staff',
+                  'is_active',
+                  'is_superuser'
                   ]
 
-    # def get_count_referrals(self, obj):
-    #     return CustomUser.objects.filter(referred_by=obj.referral_code).count()
+
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
