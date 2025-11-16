@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db.models.functions import TruncMonth
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -66,11 +66,19 @@ class DashboardSerializer(serializers.Serializer):
         rep['total_completed_orders'] = Order.objects.filter(status='Completed').count()
         rep['total_Cancelled_orders'] = Order.objects.filter(status='Cancelled').count()
         
+        today = datetime.now().date()
+        last_six_months = []
+        for i in range(5,-1,-1):
+            month = (today.replace(day=1) - timedelta(days=30 * i)).replace(day=1)
+            last_six_months.append(month)
+            
+               
         monthly_data = Order.objects.annotate(month =TruncMonth('created_at')).values('month').annotate(count=Count('id')).order_by('month')
+        monthly_dict = {item['month'].date(): item['count'] for item in monthly_data}
         monthly_orders = {}
-        for data in monthly_data:
-            month_name = data['month'].strftime('%B %Y')
-            monthly_orders[month_name] = data['count']
+        for month_start in last_six_months:
+            month_name = month_start.strftime('%B %Y')
+            monthly_orders[month_name] = monthly_dict.get(month_start, 0)
         
         rep['total_orders'] = monthly_orders
         return rep
@@ -87,11 +95,18 @@ class TotalEarningsSerializer(serializers.Serializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         
+        today = datetime.now().date()
+        last_six_months = []
+        for i in range(5,-1,-1):
+            month = (today.replace(day=1) - timedelta(days=30 * i)).replace(day=1)
+            last_six_months.append(month)
+        
         monthly_data = Order.objects.filter(payment_status='Paid').annotate(month=TruncMonth('created_at')).values('month').annotate(total=Sum('total')).order_by('month')
+        monthly_dict = {item['month'].date(): item['total'] for item in monthly_data}
         total_earnings = {}
-        for data in monthly_data:
-            month_name = data['month'].strftime('%B %Y')
-            total_earnings[month_name] = data['total']
+        for data in last_six_months:
+            month_name = data.strftime('%B %Y')
+            total_earnings[month_name] = monthly_dict.get(data, 0)
         
         rep['total_earnings'] = total_earnings
         return rep

@@ -155,14 +155,17 @@ class DashboardView(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-class LowStockProductView(generics.GenericAPIView):
+class LowStockProductView(generics.ListAPIView):
     serializer_class = LowStockProductSerializer
     permission_classes = [permissions.IsAdminUser]
-
-    def get(self, request, *args, **kwargs):
-        low_stock_products = Product.objects.filter(stock__lte=1).order_by('name')
-        serializer = self.get_serializer(low_stock_products, many=True)
-        return Response({'message': 'Low stock products List successfully', 'data': serializer.data})
+    
+    def get_queryset(self):
+        return Product.objects.filter(stock__lte=1).order_by('name')
+    
+    def list(self, request, *args, **kwargs):
+        # Use ListAPIView's built-in pagination/serialization then wrap the response
+        response = super().list(request, *args, **kwargs)
+        return Response({'message': 'Low stock products List successfully', 'data': response.data})
     
 class TotalEarningsView(generics.GenericAPIView):
     serializer_class = TotalEarningsSerializer
