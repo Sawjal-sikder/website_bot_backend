@@ -32,8 +32,9 @@ urlpatterns = [
 
     # Dashboard
     path('auth/cretiential/', ProjectCretientialsView.as_view(), name='project-cretiential'),
-    path('auth/cretiential/<int:pk>/', ProjectCretientialsDetailView.as_view(), name='project-cretiential-detail'),
+    path('auth/cretiential/update/', ProjectCretientialsDetailView.as_view(), name='project-cretiential-detail'),
     path('auth/user/delete/<int:pk>/', UserDeleteAdminView.as_view(), name='user-delete-admin'),
     path('auth/user/createsuperuser/', CreateUserView.as_view(), name='create-superuser'),
-    
+    path('auth/site/status/', SiteStatusView.as_view(), name='site-status'),
+    path('auth/site/status/update/', SiteStatusUpdateView.as_view(), name='site-status-update'),
 ]

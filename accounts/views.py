@@ -242,19 +242,6 @@ class UserQuestionAnswerRetrieveView(generics.RetrieveUpdateDestroyAPIView):
         return Response({"detail": "Update Successful", "data": serializer.data}, status=status.HTTP_200_OK)
 
 
-
-
-class ProjectCretientialsView(generics.ListCreateAPIView):
-    queryset = ProjectCretientials.objects.all()
-    serializer_class = ProjectCretientialsSerializer
-    pagination_class = None
-
-
-class ProjectCretientialsDetailView(generics.RetrieveUpdateAPIView):
-    queryset = ProjectCretientials.objects.all()
-    serializer_class = ProjectCretientialsSerializer
-
-
 class UserDeleteAdminView(generics.DestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
@@ -283,3 +270,89 @@ class CreateUserView(generics.CreateAPIView):
             "message": "User account created successfully by admin.",
             "user": user_data
         }, status=status.HTTP_201_CREATED)
+
+
+
+
+class ProjectCretientialsView(generics.GenericAPIView):
+    queryset = ProjectCretientials.objects.all()
+    serializer_class = ProjectCretientialsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        cretientials = ProjectCretientials.objects.first()
+        serializer = self.get_serializer(cretientials)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProjectCretientialsDetailView(generics.GenericAPIView):
+    serializer_class = ProjectCretientialsSerializer
+    permission_classes = [IsSuperUser]
+    
+    def get_object(self):
+        # Get the first object or None
+        obj = ProjectCretientials.objects.first()
+        return obj
+    
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj:
+            serializer = self.get_serializer(obj)
+        else:
+            serializer = self.get_serializer()
+        return Response(serializer.data)
+    
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj:
+            # Update existing
+            serializer = self.get_serializer(obj, data=request.data, partial=True)
+        else:
+            # Create new
+            serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SiteStatusView(generics.ListAPIView):
+    queryset = SiteStatus.objects.all()
+    serializer_class = SiteStatusSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request, *args, **kwargs):
+        site_status = SiteStatus.objects.first()
+        serializer = self.get_serializer(site_status)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+        
+class SiteStatusUpdateView(generics.GenericAPIView):
+    serializer_class = SiteStatusSerializer
+    permission_classes = [IsSuperUser]
+
+    def get_object(self):
+        # Get the first object or None
+        obj = SiteStatus.objects.first()
+        return obj
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj:
+            serializer = self.get_serializer(obj)
+        else:
+            serializer = self.get_serializer()
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj:
+            # Update existing
+            serializer = self.get_serializer(obj, data=request.data, partial=True)
+        else:
+            # Create new
+            serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

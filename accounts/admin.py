@@ -8,7 +8,7 @@ from django.urls import path, reverse
 from django.utils.html import format_html
 from django.shortcuts import redirect
 
-from .models import CustomUser, PasswordResetCode
+from .models import CustomUser, PasswordResetCode, ProjectCretientials, SiteStatus
 
 # Form to create new users in admin
 class CustomUserCreationForm(forms.ModelForm):
@@ -88,3 +88,20 @@ class PasswordResetCodeAdmin(admin.ModelAdmin):
     is_expired_display.short_description = 'Expired?'
 
 admin.site.register(PasswordResetCode, PasswordResetCodeAdmin)
+
+
+@admin.register(SiteStatus)
+class SiteStatusAdmin(admin.ModelAdmin):
+    list_display = ('is_maintenance_mode', 'maintenance_message', 'created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    
+@admin.register(ProjectCretientials)
+class ProjectCretientialsAdmin(admin.ModelAdmin):
+    list_display = (
+        'OPENAI_API_KEY', 
+        'STRIPE_SECRET_KEY', 
+        'created_at', 
+        'updated_at'
+    )
+    readonly_fields = ('created_at', 'updated_at')

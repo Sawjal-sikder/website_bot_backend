@@ -375,26 +375,6 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
         return representation
 
 
-class ProjectCretientialsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProjectCretientials
-        fields = [
-            'id',
-            'OPENAI_API_KEY',
-            'STRIPE_PUBLISHABLE_KEY',
-            'STRIPE_SECRET_KEY',
-            'STRIPE_WEBHOOK_SECRET',
-            'created_at',
-            'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-
-    def validate(self, attrs):
-        # Allow only one object to be created
-        if self.instance is None and ProjectCretientials.objects.exists():
-            raise ValidationError("Only one Project Credential can be created. Delete the existing one to add another.")
-        return attrs
-
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -419,3 +399,30 @@ class CreateUserSerializer(serializers.ModelSerializer):
             is_superuser=validated_data.get('is_superuser', False),
         )
         return user
+    
+    
+
+class ProjectCretientialsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectCretientials
+        fields = [
+            'id',
+            'OPENAI_API_KEY',
+            'STRIPE_PUBLISHABLE_KEY',
+            'STRIPE_SECRET_KEY',
+            'STRIPE_WEBHOOK_SECRET',
+            'created_at',
+            'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class SiteStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteStatus
+        fields = [
+            'id',
+            'is_maintenance_mode',
+            'maintenance_message',
+        ]
+        read_only_fields = ['id', ]
