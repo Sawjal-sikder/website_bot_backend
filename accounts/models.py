@@ -51,9 +51,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.full_name or self.email or f"User {self.pk}"
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        """Send an email to this user."""
-        send_mail(subject, message, from_email, [self.email], **kwargs)
+    # def email_user(self, subject, message, from_email=None, **kwargs):
+    #     """Send an email to this user."""
+    #     send_mail(subject, message, from_email, [self.email], **kwargs)
 
     class Meta:
         verbose_name = "User"
