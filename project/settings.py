@@ -95,6 +95,17 @@ DATABASES = {
     }
 }
 
+# Redis configuration
+import redis
+
+REDIS_CLIENT = redis.StrictRedis(
+    host='redis',          # Docker service name
+    port=6379,
+    db=0,
+    decode_responses=True  # Automatically decodes to utf-8
+)
+
+
 # PostgreSQL or other database configuration
 # DATABASES = {
 #         'default': {

@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 
+from shop.chat import ChatAPIView, ClearChatAPIView
+
 from .social_auth import *
 from .views import *
 
@@ -37,4 +39,9 @@ urlpatterns = [
     path('auth/user/createsuperuser/', CreateUserView.as_view(), name='create-superuser'),
     path('auth/site/status/', SiteStatusView.as_view(), name='site-status'),
     path('auth/site/status/update/', SiteStatusUpdateView.as_view(), name='site-status-update'),
+    
+    
+    # chat api
+    path('chat/', ChatAPIView.as_view(), name='chat-api'),
+    path('chat/clear/', ClearChatAPIView.as_view(), name='clear-chat-api'),
 ]
