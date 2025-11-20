@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 
-from shop.chat import ChatAPIView, ClearChatAPIView
+from shop.chat import ChatView, ConversationlistView
 
 from .social_auth import *
 from .views import *
@@ -42,6 +42,6 @@ urlpatterns = [
     
     
     # chat api
-    path('chat/', ChatAPIView.as_view(), name='chat-api'),
-    path('chat/clear/', ClearChatAPIView.as_view(), name='clear-chat-api'),
+    path('chat/', ChatView.as_view(), name='chat-api'),
+    path('chat/history/<str:thread_id>/', ConversationlistView.as_view(), name='chat-history-api'),
 ]

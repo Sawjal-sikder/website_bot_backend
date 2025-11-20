@@ -102,8 +102,12 @@ REDIS_CLIENT = redis.StrictRedis(
     host='redis',          # Docker service name
     port=6379,
     db=0,
-    decode_responses=True  # Automatically decodes to utf-8
+    decode_responses=True
 )
+
+# Session expires after 1 day
+SESSION_COOKIE_AGE = 86400  # 1 day
+SESSION_SAVE_EVERY_REQUEST = False
 
 
 # PostgreSQL or other database configuration
