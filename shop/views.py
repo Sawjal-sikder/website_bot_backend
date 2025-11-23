@@ -3,11 +3,17 @@ from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics, permissions, filters
 from rest_framework.response import Response
+from django.test import RequestFactory
 from django.http import JsonResponse
 from django.db.models import Sum
+from django.urls import reverse
 from .serializers import *
 from .models import *
 import random
+from .payment import orderPayment
+from rest_framework import status
+import json
+
 
 # Product Views
 class ProductListCreateView(generics.ListCreateAPIView):
@@ -73,8 +79,24 @@ class OrderCreateView(generics.ListCreateAPIView):
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
     
-    def perform_create(self, serializer):
-        serializer.save()
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+
+        # ---- Call your existing function ----
+        # it needs a DRF request object, so use RequestFactory
+        factory = RequestFactory()
+        fake_request = factory.post("/", {})  # dummy request
+        response = orderPayment(fake_request, order.id)
+
+        # convert JsonResponse → Python dict
+        data = json.loads(response.content)
+
+        return Response({
+            "order_id": order.id,
+            "payment": data
+        }, status=status.HTTP_201_CREATED)
         
         
 class SellerView(generics.ListCreateAPIView):
