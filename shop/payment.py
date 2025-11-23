@@ -36,8 +36,8 @@ def orderPayment(request, orderId):
                     'quantity': 1,
                 }],
                 mode='payment',
-                success_url='http://10.10.7.76:14009/',
-                cancel_url='http://10.10.7.76:14009/',
+                success_url='https://www.orderwithpluto.com/',
+                cancel_url='https://www.orderwithpluto.com/',
                 metadata={'order_id': order.id},
             )
 
