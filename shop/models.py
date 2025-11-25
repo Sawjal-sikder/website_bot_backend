@@ -62,18 +62,45 @@ class Order(models.Model):
         return f'Order {self.id} by {self.customer_name}'
     
     
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_instance = Order.objects.get(pk=self.pk)
+            if old_instance.status != "Cancelled" and self.status == "Cancelled":
+                for item in self.order_details.all():
+                    item.product.stock += item.quantity
+                    item.product.save()
+        super().save(*args, **kwargs)
+    
+    
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_details')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
+
     def __str__(self):
         return f'{self.quantity} of {self.product.name} in Order {self.order.id}'
 
     def save(self, *args, **kwargs):
+        # Check if updating existing instance
+        if self.pk:
+            old_instance = OrderDetail.objects.get(pk=self.pk)
+            diff = self.quantity - old_instance.quantity
+            self.product.stock = max(self.product.stock - diff, 0)
+        else:
+            # New instance, subtract quantity
+            self.product.stock = max(self.product.stock - self.quantity, 0)
+
+        self.product.save()
         super().save(*args, **kwargs)
         self.update_order_total()
+
+    def delete(self, *args, **kwargs):
+        # Restore stock when deleting
+        self.product.stock += self.quantity
+        self.product.save()
+        super().delete(*args, **kwargs)
 
     def update_order_total(self):
         total = sum(item.quantity * item.price for item in self.order.order_details.all())

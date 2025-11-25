@@ -17,3 +17,18 @@ app.autodiscover_tasks()
 # @app.task(bind=True)
 # def debug_task(self):
 #     print(f'Request: {self.request!r}')
+
+
+from celery.schedules import crontab
+
+# Explicitly import task modules to ensure they're registered
+app.conf.update(
+    imports=['shop.stock_tasks']
+)
+
+app.conf.beat_schedule = {
+    'auto-cancel-orders-every-minute': {
+        'task': 'shop.stock_tasks.auto_cancel_unpaid_orders',
+        'schedule': crontab(minute='*/1'),  # Run every 1 minute
+    },
+}

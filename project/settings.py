@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'parler',
     'parler_rest',
+    # Celery Beat
+    'django_celery_beat',
     # for app
     'accounts',
     "shop",
@@ -291,6 +293,14 @@ SOCIALACCOUNT_ADAPTER = 'accounts.adapter.MySocialAccountAdapter'
 # Celery Configuration
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://127.0.0.1:6379/0')
+
+# Celery Beat Scheduler
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Explicitly import task modules
+CELERY_IMPORTS = [
+    'shop.stock_tasks',
+]
 
 # for Google OAuth (social login)
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')

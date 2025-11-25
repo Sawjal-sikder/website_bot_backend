@@ -26,6 +26,7 @@ django-parler-rest==2.2
 
 # Celery (Task Queue)
 celery==5.5.3
+django-celery-beat==2.8.1
 redis==6.4.0
 kombu==5.5.4
 amqp==5.3.1
