@@ -37,7 +37,8 @@ class OrderSerializer(serializers.ModelSerializer):
         for detail_data in order_details_data:
             product = detail_data['product']
             quantity = detail_data['quantity']
-            price = product.price * quantity
+            # price = product.price * quantity
+            price = product.price
             total += quantity * price
             OrderDetail.objects.create(order=order, product=product, quantity=quantity, price=price)
         order.total = total
