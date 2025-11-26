@@ -32,3 +32,8 @@ COPY . .
 
 # Expose Django port
 EXPOSE 14009
+
+# migrations and collectstatic commands
+RUN python manage.py migrations
+RUN python manage.py migrate
+RUN python manage.py collectstatic --noinput
