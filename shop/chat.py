@@ -40,7 +40,7 @@ class ChatView(APIView):
         # Call AI SERVER
         try:
             ai_response_raw = requests.post(
-                "http://10.10.7.75:7777/chat",
+                "https://ai.orderwithpluto.com/chat",
                 json={"thread_id": thread_id, "message": message},
                 timeout=100
             )
