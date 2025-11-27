@@ -13,6 +13,11 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
         
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['seller'] = instance.seller.title if instance.seller else None
+        return representation
+        
 
 # order serializer
 class OrderDetailSerializer(serializers.ModelSerializer):
