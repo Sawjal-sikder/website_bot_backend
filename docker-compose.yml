@@ -1,54 +1,17 @@
-# services:
-#   web:
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     container_name: bot_web
-#     command: gunicorn project.wsgi:application --bind 0.0.0.0:14009 --workers 3 --timeout 120
-#     ports:
-#       - "14009:14009"
-#     depends_on:
-#       redis:
-#         condition: service_healthy
-#     volumes:
-#       - .:/app 
-#     environment:
-#       - DJANGO_SETTINGS_MODULE=project.settings
-
-#   worker:
-#     build:
-#       context: . 
-#       dockerfile: Dockerfile
-#     container_name: bot_celery_worker
-#     command: celery -A project worker --loglevel=info
-#     depends_on:
-#       redis:
-#         condition: service_healthy
-#     volumes:
-#       - .:/app 
-#     environment:
-#       - DJANGO_SETTINGS_MODULE=project.settings
-
-#   redis:
-#     image: redis:7-alpine
-#     container_name: bot_redis
-#     ports:
-#       - "6305:6379"
-#     healthcheck:
-#       test: ["CMD", "redis-cli", "ping"]
-#       interval: 5s
-#       timeout: 5s
-#       retries: 5
-
-
-
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: bot_web
-    command: gunicorn project.wsgi:application --bind 0.0.0.0:14009 --workers 3 --timeout 120
+    command: >
+      sh -c "
+        python manage.py makemigrations accounts &&
+        python manage.py migrate accounts &&
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn project.wsgi:application --bind 0.0.0.0:14009 --workers 3 --timeout 120
+      "
     ports:
       - "14009:14009"
     depends_on:
@@ -59,7 +22,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=project.settings
     user: "1001:1001"
-
+ 
   worker:
     build:
       context: .
@@ -74,7 +37,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=project.settings
     user: "1001:1001"
-
+ 
   beat:
     build:
       context: .
@@ -89,7 +52,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=project.settings
     user: "1001:1001"
-
+ 
   redis:
     image: redis:7-alpine
     container_name: bot_redis
