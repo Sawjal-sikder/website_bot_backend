@@ -394,8 +394,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
             full_name=validated_data.get('full_name', ''),
             phone_number=validated_data.get('phone_number', ''),
             password=validated_data['password'],
-            is_staff=validated_data.get('is_staff', False),
-            is_active=validated_data.get('is_active', False),
+            is_staff=validated_data.get('is_staff', True),
+            is_active=validated_data.get('is_active', True),
             is_superuser=validated_data.get('is_superuser', False),
         )
         return user
