@@ -173,6 +173,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'True').lower() == 'true'
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://orderwithpluto.com",
+    "https://www.orderwithpluto.com",
+
+    "https://api.orderwithpluto.com",
+    "https://www.api.orderwithpluto.com",
+
+    "https://admin.orderwithpluto.com",
+    "https://www.admin.orderwithpluto.com",
+
+    "https://ai.orderwithpluto.com",
+    "https://www.ai.orderwithpluto.com",
+]
+
+
+
 SITE_URL = "http://103.186.20.115:14003"
 AUTH_USER_MODEL = 'accounts.CustomUser'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
