@@ -108,6 +108,7 @@ class ProjectCretientials(models.Model):
 class SiteStatus(models.Model):
     is_maintenance_mode = models.BooleanField(default=False)
     maintenance_message = models.TextField(blank=True, null=True)
+    poster = models.ImageField(upload_to='maintenance_posters/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

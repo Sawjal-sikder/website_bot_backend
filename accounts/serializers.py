@@ -424,5 +424,6 @@ class SiteStatusSerializer(serializers.ModelSerializer):
             'id',
             'is_maintenance_mode',
             'maintenance_message',
+            'poster',
         ]
         read_only_fields = ['id', ]
