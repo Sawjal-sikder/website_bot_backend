@@ -12,10 +12,19 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+
+class ProductBestSeleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = []
         
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['seller'] = instance.seller.title if instance.seller else None
+        representation['product__id'] = instance.id
+        representation['product__name'] = instance.name
+        representation['product__image'] = instance.image.url if instance.image else None
         return representation
         
 

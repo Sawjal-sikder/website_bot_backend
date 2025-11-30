@@ -19,12 +19,13 @@ class Seller(models.Model):
 class Product(models.Model):
     Choices_UOM = [('pcs', 'Pieces'),('kg', 'Kilogram'),('litre', 'Litre'),('box', 'Box'),('pack', 'Pack'),]
     name = models.CharField(max_length=200)
-    seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='products')
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     stock = models.PositiveIntegerField(default=0)
     uom = models.CharField(max_length=20, choices=Choices_UOM, default='pcs')
+    is_best_seller = models.BooleanField(default=False)
+    is_best_offer = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

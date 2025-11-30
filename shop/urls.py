@@ -14,9 +14,10 @@ urlpatterns = [
     # payment and webhook urls 
     path('payment/<int:orderId>/', orderPayment, name='order-payment'),
     path('webhook/', paymentWebhook, name='payment-webhook'),
+    
     # best sellers
-    path('best-seles/', BestSeleView, name='best-sellers-list'),
-    path('best-sellers/', BestSellerView, name='best-sellers-sellers-list'),
+    path('best-seles/', BestOfferView.as_view(), name='best-offer-list'),
+    path('best-sellers/', BestSellerView.as_view(), name='best-selling-product-list'),
     
     # Admin Dashboard
     path('dashboard/', DashboardView.as_view(), name='admin-dashboard'),

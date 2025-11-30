@@ -5,7 +5,7 @@ from .models import Product, Order, OrderDetail, Seller
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price','seller', 'stock', 'is_active', 'created_at']
+    list_display = ['name', 'price', 'stock', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['name', 'description']
     list_editable = ['price', 'stock', 'is_active']
