@@ -47,7 +47,7 @@ class Order(models.Model):
     email = models.EmailField()
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
-    delivery_date = models.DateField(null=True, blank=True)
+    delivery_date = models.CharField(max_length=100, null=True, blank=True)
     delivery_charge = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('4.00'))
     total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='Pending')
