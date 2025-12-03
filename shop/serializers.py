@@ -41,7 +41,7 @@ class OrderSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Order
-        fields = ['id', 'customer_name', 'email', 'phone_number', 'address', 'delivery_date', 'total', 'status', 'payment_method', 'payment_status', 'notes', 'created_at', 'updated_at', 'order_details']
+        fields = ['id', 'customer_name', 'email', 'phone_number', 'address', 'delivery_date', 'delivery_charge', 'total', 'status', 'payment_method', 'payment_status', 'notes', 'created_at', 'updated_at', 'order_details']
         read_only_fields = ['id','total', 'status', 'payment_status', 'payment_method', 'created_at', 'updated_at']
     
     def create(self, validated_data):
@@ -51,11 +51,10 @@ class OrderSerializer(serializers.ModelSerializer):
         for detail_data in order_details_data:
             product = detail_data['product']
             quantity = detail_data['quantity']
-            # price = product.price * quantity
             price = product.price
             total += quantity * price
             OrderDetail.objects.create(order=order, product=product, quantity=quantity, price=price)
-        order.total = total
+        order.total = total + order.delivery_charge
         order.save()
         return order
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from decimal import Decimal
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -47,7 +48,8 @@ class Order(models.Model):
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
     delivery_date = models.DateField(null=True, blank=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    delivery_charge = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('4.00'))
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='Pending')
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='Card')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='Pending')
